@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>💪 3대 운동 기록 관리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 16px;
+        }
+        
+        /* 모바일에서 기본 폰트 크기 증가 */
+        @media (max-width: 480px) {
+            html {
+                font-size: 18px;
+            }
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0d0d0d;
+            color: #ffffff;
+            margin: 0;
+            min-height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+        }
+        
+        /* 모바일 최적화 - 여백 최소화 */
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+                font-size: 1rem; /* 18px 기준 */
+            }
+        }
+        
+        /* 태블릿 및 큰 화면 */
+        @media (min-width: 481px) {
+            body {
+                width: 420px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .screen.active {
+            display: block !important;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 0 5px;
+        }
+        
+        /* 모바일에서 헤더 간격 조정 */
+        @media (max-width: 480px) {
+            .header {
+                margin-bottom: 25px;
+                padding: 0;
+            }
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff4444;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+        
+        /* 모바일에서 로고 크기 대폭 증가 */
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 2.5rem;
+                margin-bottom: 15px;
+            }
+        }
+        
+        .card {
+            background-color: #1f1f1f;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+            width: 100%;
+        }
+        
+        /* 모바일에서 카드 패딩 증가 */
+        @media (max-width: 480px) {
+            .card {
+                padding: 20px 15px;
+                margin-bottom: 20px;
+                border-radius: 12px;
+            }
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 12px;
+            background-color: #ff4444;
+            color: white;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+        
+        /* 모바일에서 버튼 크기 대폭 증가 */
+        @media (max-width: 480px) {
+            .btn {
+                padding: 22px 15px;
+                font-size: 1.3rem;
+                min-height: 65px;
+                margin-bottom: 18px;
+                border-radius: 12px;
+            }
+        }
+        
+        .btn:hover {
+            background-color: #ff6666;
+        }
+        
+        .btn-secondary {
+            background-color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 12px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #000;
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            min-height: 50px;
+        }
+        
+        /* 모바일에서 입력 필드 크기 대폭 증가 */
+        @media (max-width: 480px) {
+            .form-input {
+                padding: 20px 15px;
+                font-size: 1.2rem;
+                min-height: 65px;
+                margin-bottom: 18px;
+                border-radius: 12px;
+                border-width: 3px;
+            }
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #00ff88;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        
+        /* 모바일에서 라벨 크기 증가 */
+        @media (max-width: 480px) {
+            .form-label {
+                font-size: 1.2rem;
+                margin-bottom: 12px;
+            }
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        /* 모바일에서 라디오 그룹 간격 증가 */
+        @media (max-width: 480px) {
+            .radio-group {
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+        }
+        
+        .radio-item {
+            flex: 1;
+        }
+        
+        .radio-item input {
+            display: none;
+        }
+        
+        .radio-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 10px;
+            text-align: center;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #000;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            min-height: 50px;
+            touch-action: manipulation;
+        }
+        
+        /* 모바일에서 라디오 라벨 크기 대폭 증가 */
+        @media (max-width: 480px) {
+            .radio-label {
+                padding: 20px 8px;
+                font-size: 1.1rem;
+                min-height: 65px;
+                border-radius: 12px;
+                border-width: 3px;
+                line-height: 1.2;
+            }
+        }
+        
+        .radio-item input:checked + .radio-label {
+            border-color: #00ff88;
+            background-color: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+        
+        .link {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .alert-error {
+            background-color: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            border: 1px solid #ff4444;
+        }
+        
+        .alert-success {
+            background-color: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #333;
+            border-radius: 50%;
+            border-top-color: #00ff88;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .back-btn {
+            display: inline-block;
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .exercise-section {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+        
+        .exercise-section:last-child {
+            border-bottom: none;
+        }
+        
+        .exercise-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ff88;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        /* 모바일에서 운동 제목 크기 조정 */
+        @media (max-width: 480px) {
+            .exercise-title {
+                font-size: 1.6rem;
+                margin-bottom: 18px;
+            }
+        }
+        
+        .weight-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 15px;
+        }
+        
+        .weight-input {
+            flex: 1;
+        }
+        
+        .weight-input .form-input {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            min-height: 55px;
+        }
+        
+        /* 모바일에서 중량 입력 필드 크기 대폭 증가 */
+        @media (max-width: 480px) {
+            .weight-input .form-input {
+                font-size: 1.8rem;
+                min-height: 70px;
+                padding: 22px 15px;
+                border-radius: 12px;
+            }
+        }
+        
+        .kg-label {
+            color: #ccc;
+            font-weight: bold;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+        
+        /* 모바일에서 KG 라벨 크기 증가 */
+        @media (max-width: 480px) {
+            .kg-label {
+                font-size: 1.4rem;
+                margin-bottom: 18px;
+            }
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.1), rgba(0, 255, 136, 0.1));
+            border: 2px solid #00ff88;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 15px;
+        }
+        
+        .result-total {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ff4444;
+            margin: 20px 0;
+        }
+        
+        .result-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .result-item {
+            text-align: center;
+            padding: 15px 8px;
+            background-color: rgba(0,0,0,0.4);
+            border-radius: 8px;
+        }
+        
+        .result-item-label {
+            color: #ccc;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .result-item-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .success {
+            color: #00ff88;
+        }
+        
+        .failure {
+            color: #ff4444;
+        }
+
+        .my-rank-card {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(255, 68, 68, 0.1));
+            border: 2px solid #00ff88;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .filter-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .filter-tab.active {
+            background-color: #00ff88;
+            color: #000;
+        }
+
+        .filter-tab:hover {
+            background-color: rgba(0, 255, 136, 0.2);
+        }
+
+        .rank-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: rgba(0,0,0,0.4);
+            border: 1px solid #333;
+        }
+
+        .rank-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            width: 50px;
+            text-align: center;
+        }
+
+        .rank-gold { color: #FFD700; }
+        .rank-silver { color: #C0C0C0; }
+        .rank-bronze { color: #CD7F32; }
+        .rank-normal { color: #ccc; }
+
+        .user-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .user-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .user-details {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .user-total {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ff4444;
+            text-align: right;
+        }
+
+      /* 애니메이션 추가 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* 화면 전환 애니메이션 */
+.screen {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* 카드 호버 효과 */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 255, 136, 0.1);
+}
+
+/* 버튼 개선 */
+.btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* 랭킹 아이템 애니메이션 */
+.rank-item {
+    animation: slideIn 0.4s ease-out;
+    animation-fill-mode: both;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rank-item:hover {
+    transform: translateX(5px);
+    box-shadow: -5px 0 20px rgba(0, 255, 136, 0.1);
+}
+
+/* 토스트 메시지 스타일 */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background-color: #00ff88;
+    color: #000;
+    padding: 15px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+    </style>
+</head>
+<body>
+    <!-- 시작 화면 -->
+    <div id="startScreen" class="screen active">
+        <div class="container">
+            <div class="header">
+                <div class="logo">💪 3대 운동 기록 관리</div>
+                <p>파워를 측정하고 기록하세요</p>
+            </div>
+            
+            <div class="card">
+                <div class="text-center" style="margin-bottom: 20px;">
+                    <h2 style="color: #00ff88; margin-bottom: 15px;">💯 철의 전사가 되어보세요</h2>
+                    <p style="color: #ccc;">스쿼트, 벤치프레스, 데드리프트<br>당신의 한계를 뛰어넘어 보세요!</p>
+                </div>
+                
+                <button class="btn" onclick="goToLogin()">로그인</button>
+                <button class="btn btn-secondary" onclick="goToRegister()">회원가입</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 로그인 화면 -->
+    <div id="loginScreen" class="screen">
+        <div class="container">
+            <div class="header">
+                <div class="logo">🔐 로그인</div>
+            </div>
+            
+            <div class="card">
+                <div id="loginAlert"></div>
+                
+                <form onsubmit="return doLogin(event)">
+                    <label class="form-label">휴대폰 번호</label>
+                    <input type="tel" class="form-input" id="loginPhone" placeholder="010-0000-0000" required>
+                    
+                    <label class="form-label">비밀번호</label>
+                    <input type="password" class="form-input" id="loginPassword" placeholder="비밀번호 입력" required>
+                    
+                    <button type="submit" class="btn">
+                        <span id="loginBtnText">로그인</span>
+                        <span id="loginBtnLoading" class="loading hidden"></span>
+                    </button>
+                </form>
+                
+                <div class="text-center">
+                    <a href="#" class="link" onclick="goToRegister()">회원가입</a> | 
+                    <a href="#" class="link" onclick="doResetPassword()">비밀번호 찾기</a>
+                </div>
+                
+                <div class="text-center" style="margin-top: 20px;">
+                    <a href="#" class="link" onclick="goToStart()">← 돌아가기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 회원가입 화면 -->
+    <div id="registerScreen" class="screen">
+        <div class="container">
+            <div class="header">
+                <div class="logo">📝 회원가입</div>
+            </div>
+            
+            <div class="card">
+                <div id="registerAlert"></div>
+                
+                <form onsubmit="return doRegister(event)">
+                    <label class="form-label">이름</label>
+                    <input type="text" class="form-input" id="registerName" placeholder="실명을 입력해주세요" required>
+                    
+                    <label class="form-label">휴대폰 번호</label>
+                    <input type="tel" class="form-input" id="registerPhone" placeholder="010-0000-0000" required>
+                    
+                    <label class="form-label">비밀번호</label>
+                    <input type="password" class="form-input" id="registerPassword" placeholder="최소 4자리" required>
+                    
+                    <label class="form-label">비밀번호 확인</label>
+                    <input type="password" class="form-input" id="registerPasswordConfirm" placeholder="비밀번호 재입력" required>
+                    
+                    <label class="form-label">성별</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="male" name="gender" value="남" required>
+                            <label for="male" class="radio-label">👨 남성</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="female" name="gender" value="여" required>
+                            <label for="female" class="radio-label">👩 여성</label>
+                        </div>
+                    </div>
+                    
+                    <label class="form-label">담당 트레이너</label>
+                    <input type="text" class="form-input" id="registerTrainer" placeholder="트레이너 이름" required>
+                    
+                    <button type="submit" class="btn">
+                        <span id="registerBtnText">회원가입 완료</span>
+                        <span id="registerBtnLoading" class="loading hidden"></span>
+                    </button>
+                </form>
+                
+                <div class="text-center">
+                    <a href="#" class="link" onclick="goToLogin()">이미 계정이 있으신가요? 로그인</a>
+                </div>
+                
+                <div class="text-center" style="margin-top: 20px;">
+                    <a href="#" class="link" onclick="goToStart()">← 돌아가기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 메인 화면 -->
+    <div id="mainScreen" class="screen">
+        <div class="container">
+            <div class="card">
+                <div class="text-center">
+                    <h2 style="color: #00ff88;" id="welcomeMessage">환영합니다!</h2>
+                    <p id="userInfo" style="color: #ccc; margin-top: 10px;"></p>
+                </div>
+                
+                <button class="btn" onclick="goToRecordType()">📝 새 기록 등록</button>
+                <button class="btn btn-secondary" onclick="goToHistory()">📊 내 기록 히스토리</button>
+                <button class="btn btn-secondary" onclick="goToRankings()">🏆 전체 순위 보기</button>
+                
+                <div class="text-center" style="margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="doLogout()" style="width: auto; padding: 10px 20px;">로그아웃</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 기록 유형 선택 화면 -->
+    <div id="recordTypeScreen" class="screen">
+        <div class="container">
+            <a href="#" class="back-btn" onclick="goToMain()">← 메인으로</a>
+            
+            <div class="header">
+                <div class="logo">📋 기록 유형 선택</div>
+                <p style="color: #ccc;">원하는 기록 유형을 선택하세요</p>
+            </div>
+            
+            <div class="card">
+                <label class="form-label">기록 유형을 선택하세요</label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="workout" name="recordType" value="운동기록" required>
+                        <label for="workout" class="radio-label">
+                            🏋️<br>운동기록<br>
+                            <small style="font-size: 0.8rem; opacity: 0.7;">각 운동별 1회 시도</small>
+                        </label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="competition" name="recordType" value="대회기록" required>
+                        <label for="competition" class="radio-label">
+                            🏆<br>대회기록<br>
+                            <small style="font-size: 0.8rem; opacity: 0.7;">각 운동별 1회 시도</small>
+                        </label>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="startRecording()">다음 단계</button>
+                
+                <div style="margin-top: 20px; padding: 15px; background-color: rgba(0,255,136,0.1); border-radius: 8px; font-size: 0.9rem;">
+                    <strong>💡 참고:</strong> 운동기록과 대회기록 모두 각 운동별로 1회씩만 시도합니다.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 운동 기록 입력 화면 -->
+    <div id="recordInputScreen" class="screen">
+        <div class="container">
+            <a href="#" class="back-btn" onclick="goToRecordType()">← 이전으로</a>
+            
+            <div class="header">
+                <div class="logo">💪 운동 기록 입력</div>
+                <p id="recordTypeTitle" style="color: #ccc;">운동기록</p>
+            </div>
+            
+            <div class="card">
+                <form onsubmit="return doSubmitRecord(event)">
+                    <!-- 스쿼트 -->
+                    <div class="exercise-section">
+                        <div class="exercise-title">🦵 스쿼트</div>
+                        <div class="weight-input-group">
+                            <div class="weight-input">
+                                <label class="form-label">중량</label>
+                                <input type="number" class="form-input" id="squatWeight" placeholder="0" min="0" step="0.5" required>
+                            </div>
+                            <div class="kg-label">KG</div>
+                        </div>
+                        <label class="form-label">성공 여부</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="squatSuccess" name="squatResult" value="성공">
+                                <label for="squatSuccess" class="radio-label">✅ 성공</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="squatFail" name="squatResult" value="실패">
+                                <label for="squatFail" class="radio-label">❌ 실패</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 벤치프레스 -->
+                    <div class="exercise-section">
+                        <div class="exercise-title">💪 벤치프레스</div>
+                        <div class="weight-input-group">
+                            <div class="weight-input">
+                                <label class="form-label">중량</label>
+                                <input type="number" class="form-input" id="benchWeight" placeholder="0" min="0" step="0.5" required>
+                            </div>
+                            <div class="kg-label">KG</div>
+                        </div>
+                        <label class="form-label">성공 여부</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="benchSuccess" name="benchResult" value="성공">
+                                <label for="benchSuccess" class="radio-label">✅ 성공</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="benchFail" name="benchResult" value="실패">
+                                <label for="benchFail" class="radio-label">❌ 실패</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 데드리프트 -->
+                    <div class="exercise-section">
+                        <div class="exercise-title">🔥 데드리프트</div>
+                        <div class="weight-input-group">
+                            <div class="weight-input">
+                                <label class="form-label">중량</label>
+                                <input type="number" class="form-input" id="deadWeight" placeholder="0" min="0" step="0.5" required>
+                            </div>
+                            <div class="kg-label">KG</div>
+                        </div>
+                        <label class="form-label">성공 여부</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="deadSuccess" name="deadResult" value="성공">
+                                <label for="deadSuccess" class="radio-label">✅ 성공</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="deadFail" name="deadResult" value="실패">
+                                <label for="deadFail" class="radio-label">❌ 실패</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        <span id="submitBtnText">🔥 기록 제출</span>
+                        <span id="submitBtnLoading" class="loading hidden"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 결과 화면 -->
+    <div id="resultScreen" class="screen">
+        <div class="container">
+            <div class="result-card">
+                <div class="result-title">🎉 기록 완료!</div>
+                <div class="result-total" id="resultTotal">0 KG</div>
+                
+                <div class="result-details">
+                    <div class="result-item">
+                        <div class="result-item-label">스쿼트</div>
+                        <div class="result-item-value" id="resultSquat">0kg</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-item-label">벤치</div>
+                        <div class="result-item-value" id="resultBench">0kg</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-item-label">데드</div>
+                        <div class="result-item-value" id="resultDead">0kg</div>
+                    </div>
+                </div>
+                
+                <div style="font-size: 1.1rem; color: #00ff88; font-weight: bold;" id="resultRank">전체 순위: 계산중...</div>
+            </div>
+            
+            <div class="card">
+                <h3 style="color: #00ff88; margin-bottom: 20px; text-align: center;">🤖 AI 피드백</h3>
+                <div id="aiFeedback" style="line-height: 1.6;">
+                    <div class="text-center" style="padding: 20px 0;">
+                        <div class="loading"></div>
+                        <div style="margin-top: 10px; color: #ccc;">AI가 분석중입니다...</div>
+                    </div>
+                </div>
+                
+                <!-- AI 피드백 섹션들 -->
+                <div id="feedbackSections" style="display: none;">
+                    <!-- 총평 -->
+                    <div class="feedback-section" style="margin-bottom: 20px; padding: 15px; background-color: rgba(0,255,136,0.1); border-radius: 8px; border-left: 4px solid #00ff88;">
+                        <h4 style="color: #00ff88; margin-bottom: 10px; font-size: 1rem;">💯 총평</h4>
+                        <p id="feedbackSummary" style="margin: 0; color: #fff; font-size: 0.95rem; line-height: 1.5;"></p>
+                    </div>
+                    
+                    <!-- 강점 분석 -->
+                    <div class="feedback-section" style="margin-bottom: 20px; padding: 15px; background-color: rgba(0,255,136,0.05); border-radius: 8px; border-left: 4px solid #00ff88;">
+                        <h4 style="color: #00ff88; margin-bottom: 10px; font-size: 1rem;">💪 강점</h4>
+                        <p id="feedbackStrengths" style="margin: 0; color: #ccc; font-size: 0.9rem; line-height: 1.4;"></p>
+                    </div>
+                    
+                    <!-- 개선점 -->
+                    <div class="feedback-section" style="margin-bottom: 20px; padding: 15px; background-color: rgba(255,68,68,0.05); border-radius: 8px; border-left: 4px solid #ff4444;">
+                        <h4 style="color: #ff4444; margin-bottom: 10px; font-size: 1rem;">🎯 개선점</h4>
+                        <p id="feedbackImprovements" style="margin: 0; color: #ccc; font-size: 0.9rem; line-height: 1.4;"></p>
+                    </div>
+                    
+                    <!-- 다음 목표 -->
+                    <div class="feedback-section" style="margin-bottom: 15px; padding: 15px; background-color: rgba(255,136,0,0.05); border-radius: 8px; border-left: 4px solid #ff8800;">
+                        <h4 style="color: #ff8800; margin-bottom: 10px; font-size: 1rem;">🎯 다음 목표</h4>
+                        <p id="feedbackGoals" style="margin: 0; color: #ccc; font-size: 0.9rem; line-height: 1.4;"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button class="btn" onclick="shareResult()">📤 결과 공유하기</button>
+                <button class="btn btn-secondary" onclick="goToMain()">메인으로 돌아가기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 히스토리 화면 -->
+    <div id="historyScreen" class="screen">
+        <div class="container">
+            <a href="#" class="back-btn" onclick="goToMain()">← 메인으로</a>
+            
+            <div class="header">
+                <div class="logo">📊 내 기록 히스토리</div>
+                <p style="color: #ccc;">나의 운동 기록을 확인해보세요</p>
+            </div>
+            
+            <div id="historyContent">
+                <div class="text-center" style="padding: 40px 0;">
+                    <div class="loading"></div>
+                    <div style="margin-top: 15px; color: #ccc;">기록을 불러오는 중...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rankingsScreen" class="screen">
+        <div class="container">
+            <a href="#" class="back-btn" onclick="goToMain()">← 메인으로</a>
+            
+            <div class="header">
+                <div class="logo">🏆 전체 순위</div>
+                <p style="color: #ccc;">파워리프터들의 순위를 확인해보세요</p>
+            </div>
+            
+            <!-- 내 순위 카드 -->
+            <div class="my-rank-card" id="myRankCard" style="display: none;">
+                <div style="color: #00ff88; font-weight: bold; margin-bottom: 10px;">내 현재 순위</div>
+                <div style="font-size: 2.5rem; font-weight: bold; color: #ff4444; margin: 10px 0;" id="myCurrentRank">-</div>
+                <div style="color: #ccc;">
+                    개인 최고: <span id="myBestTotal" style="color: #ff4444; font-weight: bold;">0kg</span>
+                </div>
+            </div>
+            
+            <!-- 통계 정보 -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;" id="statsGrid">
+                <div style="text-align: center; padding: 15px; background-color: rgba(0,0,0,0.4); border-radius: 8px;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #00ff88;" id="totalUsers">0</div>
+                    <div style="font-size: 0.8rem; color: #ccc; margin-top: 5px;">총 사용자</div>
+                </div>
+                <div style="text-align: center; padding: 15px; background-color: rgba(0,0,0,0.4); border-radius: 8px;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #00ff88;" id="avgTotal">0kg</div>
+                    <div style="font-size: 0.8rem; color: #ccc; margin-top: 5px;">평균 기록</div>
+                </div>
+            </div>
+            
+            <!-- 필터 탭 -->
+            <div style="display: flex; margin-bottom: 20px; background-color: rgba(0,0,0,0.4); border-radius: 8px; padding: 4px;">
+             <button class="filter-tab active" onclick="filterRankings('all')">전체</button>
+             <button class="filter-tab" onclick="filterRankings('male')">남성</button>
+            <button class="filter-tab" onclick="filterRankings('female')">여성</button>
+            </div>
+            
+            <!-- 검색 박스 -->
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="searchInput" placeholder="사용자 이름 검색..." onkeyup="searchRankings()" 
+                       style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 8px; background-color: #000; color: #fff; font-size: 1rem;">
+            </div>
+            
+            <!-- 순위 목록 -->
+            <div id="rankingsContent">
+                <div class="text-center" style="padding: 40px 0;">
+                    <div class="loading"></div>
+                    <div style="margin-top: 15px; color: #ccc;">순위를 불러오는 중...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var currentUser = null;
+        var currentRecordType = null;
+        
+        // 전체 순위 관련 변수
+        var allRankings = [];
+        var filteredRankings = [];
+        var currentFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('앱 시작');
+            setupPhoneFormat();
+        });
+
+        function showScreen(screenId) {
+            console.log('화면 전환:', screenId);
+            var screens = document.querySelectorAll('.screen');
+            for (var i = 0; i < screens.length; i++) {
+                screens[i].classList.remove('active');
+            }
+            var targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+                console.log('화면 표시 성공:', screenId);
+            } else {
+                console.error('화면을 찾을 수 없습니다:', screenId);
+            }
+        }
+
+        function goToStart() { showScreen('startScreen'); }
+        function goToLogin() { showScreen('loginScreen'); }
+        function goToRegister() { showScreen('registerScreen'); }
+        function goToMain() { showScreen('mainScreen'); }
+        function goToRecordType() { showScreen('recordTypeScreen'); }
+        function goToRecordInput() { showScreen('recordInputScreen'); }
+        function goToResult() { showScreen('resultScreen'); }
+        function goToHistory() { showScreen('historyScreen'); loadUserHistory(); }
+
+        function showAlert(containerId, message, type) {
+            type = type || 'error';
+            var container = document.getElementById(containerId);
+            if (container) {
+                container.innerHTML = '<div class="alert alert-' + type + '">' + message + '</div>';
+                setTimeout(function() {
+                    container.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        function toggleLoading(btnTextId, btnLoadingId, isLoading) {
+            var textElement = document.getElementById(btnTextId);
+            var loadingElement = document.getElementById(btnLoadingId);
+            
+            if (textElement) {
+                textElement.style.display = isLoading ? 'none' : 'inline';
+            }
+            if (loadingElement) {
+                loadingElement.style.display = isLoading ? 'inline-block' : 'none';
+            }
+        }
+
+        function setupPhoneFormat() {
+            var phoneInputs = ['loginPhone', 'registerPhone'];
+            for (var i = 0; i < phoneInputs.length; i++) {
+                var input = document.getElementById(phoneInputs[i]);
+                if (input) {
+                    input.addEventListener('input', function() {
+                        formatPhone(this);
+                    });
+                }
+            }
+        }
+
+        function formatPhone(input) {
+            var value = input.value.replace(/[^0-9]/g, '');
+            if (value.length >= 11) {
+                input.value = value.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+            }
+        }
+
+        function doRegister(event) {
+            event.preventDefault();
+            
+            var name = document.getElementById('registerName').value.trim();
+            var phone = document.getElementById('registerPhone').value.trim();
+            var password = document.getElementById('registerPassword').value;
+            var passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+            var genderElement = document.querySelector('input[name="gender"]:checked');
+            var gender = genderElement ? genderElement.value : null;
+            var trainer = document.getElementById('registerTrainer').value.trim();
+
+            if (!name || !phone || !password || !gender || !trainer) {
+                showAlert('registerAlert', '모든 필드를 입력해주세요.');
+                return false;
+            }
+
+            if (password !== passwordConfirm) {
+                showAlert('registerAlert', '비밀번호가 일치하지 않습니다.');
+                return false;
+            }
+
+            if (password.length < 4) {
+                showAlert('registerAlert', '비밀번호는 최소 4자리 이상이어야 합니다.');
+                return false;
+            }
+
+            toggleLoading('registerBtnText', 'registerBtnLoading', true);
+
+            if (typeof google === 'undefined' || !google.script || !google.script.run) {
+                toggleLoading('registerBtnText', 'registerBtnLoading', false);
+                showAlert('registerAlert', 'Google Apps Script 연결에 실패했습니다.');
+                return false;
+            }
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    toggleLoading('registerBtnText', 'registerBtnLoading', false);
+                    
+                    if (result && result.success) {
+                        showAlert('registerAlert', result.message, 'success');
+                        setTimeout(function() {
+                            currentUser = result.userData;
+                            updateUserInfo();
+                            goToMain();
+                        }, 1500);
+                    } else {
+                        showAlert('registerAlert', result ? result.message : '회원가입에 실패했습니다.');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    toggleLoading('registerBtnText', 'registerBtnLoading', false);
+                    showAlert('registerAlert', '회원가입 중 오류가 발생했습니다: ' + (error.message || error));
+                })
+                .registerUser({
+                    name: name,
+                    phone: phone,
+                    password: password,
+                    gender: gender,
+                    trainer: trainer
+                });
+
+            return false;
+        }
+
+        function doLogin(event) {
+            event.preventDefault();
+            
+            var phone = document.getElementById('loginPhone').value.trim();
+            var password = document.getElementById('loginPassword').value;
+
+            if (!phone || !password) {
+                showAlert('loginAlert', '휴대폰 번호와 비밀번호를 입력해주세요.');
+                return false;
+            }
+
+            toggleLoading('loginBtnText', 'loginBtnLoading', true);
+
+            if (typeof google === 'undefined' || !google.script || !google.script.run) {
+                toggleLoading('loginBtnText', 'loginBtnLoading', false);
+                showAlert('loginAlert', 'Google Apps Script 연결에 실패했습니다.');
+                return false;
+            }
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    toggleLoading('loginBtnText', 'loginBtnLoading', false);
+                    
+                    if (result && result.success) {
+                        currentUser = result.userData;
+                        updateUserInfo();
+                        goToMain();
+                    } else {
+                        showAlert('loginAlert', result ? result.message : '로그인에 실패했습니다.');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    toggleLoading('loginBtnText', 'loginBtnLoading', false);
+                    showAlert('loginAlert', '로그인 중 오류가 발생했습니다: ' + (error.message || error));
+                })
+                .loginUser(phone, password);
+
+            return false;
+        }
+
+        function doResetPassword() {
+            var phone = prompt('등록된 휴대폰 번호를 입력해주세요:');
+            if (!phone) return;
+
+            if (typeof google === 'undefined' || !google.script || !google.script.run) {
+                alert('Google Apps Script 연결에 실패했습니다.');
+                return;
+            }
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result && result.success) {
+                        alert(result.message);
+                    } else {
+                        alert(result ? result.message : '비밀번호 재설정에 실패했습니다.');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    alert('비밀번호 재설정 중 오류가 발생했습니다.');
+                })
+                .resetPassword(phone);
+        }
+
+        function updateUserInfo() {
+            if (currentUser) {
+                document.getElementById('welcomeMessage').textContent = '안녕하세요, ' + currentUser.name + '님!';
+                document.getElementById('userInfo').textContent = '트레이너: ' + currentUser.trainer + ' | 성별: ' + currentUser.gender;
+            }
+        }
+
+        function doLogout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                currentUser = null;
+                goToStart();
+            }
+        }
+
+        function startRecording() {
+            var recordTypeElement = document.querySelector('input[name="recordType"]:checked');
+            if (!recordTypeElement) {
+                alert('기록 유형을 선택해주세요.');
+                return;
+            }
+
+            currentRecordType = recordTypeElement.value;
+            document.getElementById('recordTypeTitle').textContent = currentRecordType;
+            console.log('선택한 기록 유형:', currentRecordType);
+            
+            goToRecordInput();
+        }
+
+        function doSubmitRecord(event) {
+            event.preventDefault();
+
+            // 입력값 검증
+            var squatWeight = parseFloat(document.getElementById('squatWeight').value);
+            var benchWeight = parseFloat(document.getElementById('benchWeight').value);
+            var deadWeight = parseFloat(document.getElementById('deadWeight').value);
+            
+            // 중량 검증
+            if (isNaN(squatWeight) || squatWeight < 0) {
+                alert('스쿼트 중량을 올바르게 입력해주세요.');
+                document.getElementById('squatWeight').focus();
+                return false;
+            }
+            
+            if (isNaN(benchWeight) || benchWeight < 0) {
+                alert('벤치프레스 중량을 올바르게 입력해주세요.');
+                document.getElementById('benchWeight').focus();
+                return false;
+            }
+            
+            if (isNaN(deadWeight) || deadWeight < 0) {
+                alert('데드리프트 중량을 올바르게 입력해주세요.');
+                document.getElementById('deadWeight').focus();
+                return false;
+            }
+            
+            var squatResultElement = document.querySelector('input[name="squatResult"]:checked');
+            var benchResultElement = document.querySelector('input[name="benchResult"]:checked');
+            var deadResultElement = document.querySelector('input[name="deadResult"]:checked');
+            
+            var squatResult = squatResultElement ? squatResultElement.value : null;
+            var benchResult = benchResultElement ? benchResultElement.value : null;
+            var deadResult = deadResultElement ? deadResultElement.value : null;
+
+            // 성공/실패 선택 검증
+            if (!squatResult) {
+                alert('스쿼트의 성공/실패 여부를 선택해주세요.');
+                document.querySelector('input[name="squatResult"]').focus();
+                return false;
+            }
+            
+            if (!benchResult) {
+                alert('벤치프레스의 성공/실패 여부를 선택해주세요.');
+                document.querySelector('input[name="benchResult"]').focus();
+                return false;
+            }
+            
+            if (!deadResult) {
+                alert('데드리프트의 성공/실패 여부를 선택해주세요.');
+                document.querySelector('input[name="deadResult"]').focus();
+                return false;
+            }
+
+            toggleLoading('submitBtnText', 'submitBtnLoading', true);
+
+            var recordData = {
+                userId: currentUser.id,
+                recordType: currentRecordType,
+                squatWeight: squatWeight,
+                squatSuccess: squatResult,
+                benchWeight: benchWeight,
+                benchSuccess: benchResult,
+                deadWeight: deadWeight,
+                deadSuccess: deadResult
+            };
+
+            console.log('기록 제출:', recordData);
+
+            if (typeof google === 'undefined' || !google.script || !google.script.run) {
+                toggleLoading('submitBtnText', 'submitBtnLoading', false);
+                alert('Google Apps Script 연결에 실패했습니다.');
+                return false;
+            }
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    console.log('기록 저장 응답:', result);
+                    toggleLoading('submitBtnText', 'submitBtnLoading', false);
+                    if (result && result.success) {
+                        displayResult(recordData, result);
+                        goToResult();
+                        generateAIFeedback(recordData, result);
+                    } else {
+                        alert('기록 저장 중 오류가 발생했습니다: ' + (result ? result.message : '알 수 없는 오류'));
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error('기록 저장 오류:', error);
+                    toggleLoading('submitBtnText', 'submitBtnLoading', false);
+                    alert('기록 저장 중 오류가 발생했습니다: ' + (error.message || error));
+                })
+                .saveRecord(recordData);
+
+            return false;
+        }
+
+        function displayResult(recordData, result) {
+            document.getElementById('resultTotal').textContent = result.total + ' KG';
+            document.getElementById('resultRank').textContent = '전체 순위: ' + result.rank + '위';
+            
+            document.getElementById('resultSquat').textContent = 
+                recordData.squatSuccess === '성공' ? recordData.squatWeight + 'kg' : '실패';
+            document.getElementById('resultBench').textContent = 
+                recordData.benchSuccess === '성공' ? recordData.benchWeight + 'kg' : '실패';
+            document.getElementById('resultDead').textContent = 
+                recordData.deadSuccess === '성공' ? recordData.deadWeight + 'kg' : '실패';
+
+            var squatElement = document.getElementById('resultSquat');
+            var benchElement = document.getElementById('resultBench');
+            var deadElement = document.getElementById('resultDead');
+            
+            squatElement.className = 'result-item-value ' + (recordData.squatSuccess === '성공' ? 'success' : 'failure');
+            benchElement.className = 'result-item-value ' + (recordData.benchSuccess === '성공' ? 'success' : 'failure');
+            deadElement.className = 'result-item-value ' + (recordData.deadSuccess === '성공' ? 'success' : 'failure');
+        }
+
+        function generateAIFeedback(recordData, result) {
+            document.getElementById('aiFeedback').innerHTML = 
+                '<div class="text-center" style="padding: 20px 0;">' +
+                '<div class="loading"></div>' +
+                '<div style="margin-top: 10px; color: #ccc;">AI가 분석중입니다...</div>' +
+                '</div>';
+            
+            document.getElementById('feedbackSections').style.display = 'none';
+            
+            if (typeof google === 'undefined' || !google.script || !google.script.run) {
+                showSimpleFeedback(recordData, result);
+                return;
+            }
+
+            google.script.run
+                .withSuccessHandler(function(feedbackResult) {
+                    if (feedbackResult && feedbackResult.feedback) {
+                        parseAndDisplayFeedback(feedbackResult.feedback, recordData, result);
+                    } else {
+                        showSimpleFeedback(recordData, result);
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error('AI 피드백 생성 오류:', error);
+                    showSimpleFeedback(recordData, result);
+                })
+                .generateAIFeedback(recordData, null, result.rank);
+        }
+
+        function showSimpleFeedback(recordData, result) {
+            document.getElementById('aiFeedback').style.display = 'none';
+            document.getElementById('feedbackSections').style.display = 'block';
+            
+            var total = result.total;
+            var rank = result.rank;
+            
+            // 성공한 운동 개수 계산
+            var successCount = 0;
+            if (recordData.squatSuccess === '성공') successCount++;
+            if (recordData.benchSuccess === '성공') successCount++;
+            if (recordData.deadSuccess === '성공') successCount++;
+            
+            // 레벨 계산
+            var level = '';
+            var levelColor = '';
+            if (total >= 500) {
+                level = '엘리트';
+                levelColor = '#ff8800';
+            } else if (total >= 350) {
+                level = '고급자';
+                levelColor = '#00ff88';
+            } else if (total >= 200) {
+                level = '중급자';
+                levelColor = '#00ff88';
+            } else {
+                level = '초급자';
+                levelColor = '#ff4444';
+            }
+            
+            // 최고 기록 운동 찾기
+            var exercises = [
+                { name: '스쿼트', weight: recordData.squatWeight, success: recordData.squatSuccess },
+                { name: '벤치프레스', weight: recordData.benchWeight, success: recordData.benchSuccess },
+                { name: '데드리프트', weight: recordData.deadWeight, success: recordData.deadSuccess }
+            ];
+            
+            var successfulExercises = exercises.filter(function(ex) { return ex.success === '성공'; });
+            var bestExercise = successfulExercises.length > 0 ? 
+                successfulExercises.sort(function(a, b) { return b.weight - a.weight; })[0] : null;
+            
+            var failedExercises = exercises.filter(function(ex) { return ex.success === '실패'; });
+            
+            // 총평
+            var summaryText = '🔥 총 <strong>' + total + 'kg</strong>으로 전체 <strong>' + rank + '위</strong>를 달성했습니다! ';
+            summaryText += '<span style="color: ' + levelColor + '; font-weight: bold;">' + level + '</span> 수준의 ';
+            if (successCount === 3) {
+                summaryText += '완벽한 기록입니다!';
+            } else if (successCount === 2) {
+                summaryText += '안정적인 기록을 보여주었습니다.';
+            } else {
+                summaryText += '기록이며, 다음에는 더 좋은 결과를 기대해봅니다.';
+            }
+            
+            document.getElementById('feedbackSummary').innerHTML = summaryText;
+            
+            // 강점
+            var strengthsText = '';
+            if (bestExercise) {
+                strengthsText = '특히 ' + bestExercise.name + ' ' + bestExercise.weight + 'kg이 인상적입니다! ';
+                if (successCount === 3) {
+                    strengthsText += '모든 운동을 성공시킨 완벽한 컨디션을 보여주었습니다.';
+                } else {
+                    strengthsText += '꾸준한 훈련의 결과가 잘 나타났습니다.';
+                }
+            } else {
+                strengthsText = '이번 기회를 통해 현재 수준을 파악할 수 있었습니다. 다음 도전에서 더 좋은 결과를 기대해봅니다.';
+            }
+            
+            document.getElementById('feedbackStrengths').textContent = strengthsText;
+            
+            // 개선점
+            var improvementsText = '';
+            if (failedExercises.length > 0) {
+                var weakestExercise = failedExercises[0].name;
+                improvementsText = weakestExercise + ' 운동에 더 집중적인 훈련이 필요합니다. ';
+                improvementsText += '기본 자세 점검과 점진적인 중량 증가를 통해 개선해보세요.';
+            } else {
+                improvementsText = '모든 운동을 성공했지만, 지속적인 발전을 위해 운동별 밸런스를 유지하며 점진적으로 중량을 증가시켜보세요.';
+            }
+            
+            document.getElementById('feedbackImprovements').textContent = improvementsText;
+            
+            // 다음 목표
+            var nextGoal = Math.ceil(total / 25) * 25 + 25;
+            var goalsText = '다음 목표는 총합 ' + nextGoal + 'kg 달성입니다! ';
+            if (failedExercises.length > 0) {
+                goalsText += '실패한 운동부터 차근차근 개선하여 균형잡힌 발전을 목표로 하세요.';
+            } else {
+                goalsText += '현재 수준에서 각 운동별로 5-10kg씩 점진적으로 도전해보세요.';
+            }
+            
+            document.getElementById('feedbackGoals').textContent = goalsText;
+        }
+
+        function parseAndDisplayFeedback(feedback, recordData, result) {
+            document.getElementById('aiFeedback').style.display = 'none';
+            document.getElementById('feedbackSections').style.display = 'block';
+            
+            var sections = parseFeedbackSections(feedback);
+            
+            document.getElementById('feedbackSummary').textContent = 
+                sections.summary || '총 ' + result.total + 'kg으로 ' + result.rank + '위를 달성했습니다!';
+            
+            document.getElementById('feedbackStrengths').textContent = 
+                sections.strengths || '현재 수준에서 안정적인 기록을 보여주고 있습니다.';
+            
+            document.getElementById('feedbackImprovements').textContent = 
+                sections.improvements || '균형 잡힌 발전을 위해 꾸준한 훈련이 필요합니다.';
+            
+            document.getElementById('feedbackGoals').textContent = 
+                sections.goals || '다음 목표를 설정하고 꾸준히 도전해보세요!';
+        }
+
+        function parseFeedbackSections(feedback) {
+            var sections = {
+                summary: '',
+                strengths: '',
+                improvements: '',
+                goals: ''
+            };
+            
+            try {
+                // **섹션 제목**으로 구분된 경우
+                if (feedback.includes('**총평**') || feedback.includes('**강점**')) {
+                    var parts = feedback.split(/\*\*[^*]+\*\*/);
+                    if (parts.length >= 5) {
+                        sections.summary = parts[1].trim();
+                        sections.strengths = parts[2].trim();
+                        sections.improvements = parts[3].trim();
+                        sections.goals = parts[4].trim();
+                        return sections;
+                    }
+                }
+                
+                // 숫자 구분자로 구분된 경우 (1. 2. 3. 4.)
+                if (feedback.includes('1.') && feedback.includes('2.')) {
+                    var numberedParts = feedback.split(/\d+\.\s*/);
+                    if (numberedParts.length >= 5) {
+                        sections.summary = numberedParts[1].trim();
+                        sections.strengths = numberedParts[2].trim();
+                        sections.improvements = numberedParts[3].trim();
+                        sections.goals = numberedParts[4].trim();
+                        return sections;
+                    }
+                }
+                
+                // 문장으로 구분 (기존 방식 개선)
+                var sentences = feedback.split(/[.!?]\s+/).filter(function(s) { return s.trim().length > 0; });
+                
+                if (sentences.length >= 4) {
+                    // 첫 번째 문장들을 총평으로
+                    var summaryEnd = Math.ceil(sentences.length * 0.4);
+                    sections.summary = sentences.slice(0, summaryEnd).join('. ') + '.';
+                    
+                    // 나머지를 3등분
+                    var remaining = sentences.slice(summaryEnd);
+                    var thirdSize = Math.ceil(remaining.length / 3);
+                    
+                    sections.strengths = remaining.slice(0, thirdSize).join('. ') + '.';
+                    sections.improvements = remaining.slice(thirdSize, thirdSize * 2).join('. ') + '.';
+                    sections.goals = remaining.slice(thirdSize * 2).join('. ') + '.';
+                } else if (sentences.length >= 2) {
+                    sections.summary = sentences[0] + '.';
+                    sections.improvements = sentences[1] + '.';
+                    sections.strengths = '현재 수준에서 좋은 기록을 보여주고 있습니다.';
+                    sections.goals = '꾸준한 훈련으로 더 높은 기록에 도전해보세요!';
+                } else {
+                    // 전체 텍스트를 총평으로
+                    sections.summary = feedback;
+                    sections.strengths = '꾸준한 노력의 결과입니다.';
+                    sections.improvements = '균형 잡힌 발전을 위해 계속 노력하세요.';
+                    sections.goals = '다음 목표를 향해 도전해보세요!';
+                }
+                
+                // 각 섹션이 너무 짧으면 기본값 사용
+                if (sections.summary.length < 10) {
+                    sections.summary = '훌륭한 기록입니다!';
+                }
+                if (sections.strengths.length < 10) {
+                    sections.strengths = '현재 수준에서 좋은 기록을 보여주고 있습니다.';
+                }
+                if (sections.improvements.length < 10) {
+                    sections.improvements = '꾸준한 훈련으로 더 발전할 수 있습니다.';
+                }
+                if (sections.goals.length < 10) {
+                    sections.goals = '다음 목표를 향해 도전해보세요!';
+                }
+                
+            } catch (error) {
+                console.error('피드백 파싱 오류:', error);
+                sections.summary = '훌륭한 기록입니다!';
+                sections.strengths = '현재 수준에서 좋은 기록을 보여주고 있습니다.';
+                sections.improvements = '꾸준한 훈련으로 더 발전할 수 있습니다.';
+                sections.goals = '다음 목표를 향해 도전해보세요!';
+            }
+            
+            return sections;
+        }
+
+        function shareResult() {
+            var total = document.getElementById('resultTotal').textContent;
+            var rank = document.getElementById('resultRank').textContent;
+            var squatResult = document.getElementById('resultSquat').textContent;
+            var benchResult = document.getElementById('resultBench').textContent;
+            var deadResult = document.getElementById('resultDead').textContent;
+            
+            var shareText = '💪 3대 운동 기록 측정 완료!\n\n' +
+                '🔥 총합: ' + total + '\n' +
+                '📊 ' + rank + '\n\n' +
+                '🦵 스쿼트: ' + squatResult + '\n' +
+                '💪 벤치: ' + benchResult + '\n' +
+                '🔥 데드: ' + deadResult + '\n\n' +
+                '커뮤니티로 진입: https://open.kakao.com/o/gQP8HyEh';
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: '💪 3대 운동 기록',
+                    text: shareText
+                });
+            } else {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(shareText).then(function() {
+                        alert('결과가 클립보드에 복사되었습니다!\n\n' + shareText);
+                    }).catch(function() {
+                        alert(shareText);
+                    });
+                } else {
+                    alert(shareText);
+                }
+            }
+        }
+
+        function loadUserHistory() {
+            console.log('=== 히스토리 로드 시작 ===');
+            console.log('현재 사용자:', currentUser);
+            
+            if (!currentUser || !currentUser.id) {
+                console.log('❌ 사용자 정보 없음');
+                document.getElementById('historyContent').innerHTML = 
+                    '<div class="text-center" style="padding: 40px 0;">' +
+                    '<h3 style="color: #ff4444;">⚠️ 로그인이 필요합니다</h3>' +
+                    '<p style="color: #ccc;">기록을 확인하려면 먼저 로그인해주세요.</p>' +
+                    '</div>';
+                return;
+            }
+
+            // 로딩 화면 표시
+            document.getElementById('historyContent').innerHTML = 
+                '<div class="text-center" style="padding: 40px 0;">' +
+                '<div class="loading"></div>' +
+                '<div style="margin-top: 15px; color: #ccc;">기록을 불러오는 중...</div>' +
+                '<div style="margin-top: 10px; font-size: 0.8rem; color: #666;">사용자 ID: ' + currentUser.id + '</div>' +
+                '</div>';
+
+            console.log('Google Apps Script 연결 확인...');
+            
+            // Google Apps Script 연결 확인
+            if (typeof google === 'undefined' || !google.script || !google.script.run) {
+                console.error('❌ Google Apps Script 연결 실패');
+                showHistoryError('Google Apps Script가 연결되지 않았습니다.<br>웹앱이 올바르게 배포되었는지 확인해주세요.');
+                return;
+            }
+
+            console.log('✅ Google Apps Script 연결 확인됨');
+            console.log('getUserRecords 호출 시작, 사용자 ID:', currentUser.id);
+
+            // 타임아웃 설정 (20초)
+            var timeout = setTimeout(function() {
+                console.error('⏰ 기록 조회 타임아웃 (20초 초과)');
+                showHistoryError('서버 응답이 너무 오래 걸립니다.<br>잠시 후 다시 시도해주세요.');
+            }, 20000);
+
+            // 단계별 디버깅을 위한 추가 정보
+            console.log('요청 파라미터:', {
+                userId: currentUser.id,
+                userIdType: typeof currentUser.id,
+                userIdLength: String(currentUser.id).length
+            });
+
+            // 실제 서버 호출
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    clearTimeout(timeout);
+                    console.log('✅ 서버 응답 받음');
+                    console.log('응답 타입:', typeof result);
+                    console.log('응답 내용:', result);
+                    console.log('null 체크:', result === null);
+                    console.log('undefined 체크:', result === undefined);
+                    
+                    // null 또는 undefined 응답 처리
+                    if (result === null || result === undefined) {
+                        console.error('❌ 서버에서 null/undefined 응답');
+                        showHistoryError(
+                            '서버에서 올바른 응답을 받지 못했습니다.<br>' +
+                            '<strong>응답값:</strong> ' + result + '<br>' +
+                            '<strong>타입:</strong> ' + typeof result + '<br>' +
+                            '웹앱 배포를 다시 확인해주세요.'
+                        );
+                        return;
+                    }
+                    
+                    // 응답 구조 확인
+                    if (typeof result !== 'object') {
+                        console.error('❌ 잘못된 응답 형식:', typeof result);
+                        showHistoryError('서버 응답 형식이 올바르지 않습니다: ' + typeof result);
+                        return;
+                    }
+                    
+                    // success 속성 확인
+                    if (!result.hasOwnProperty('success')) {
+                        console.error('❌ success 속성 없음');
+                        showHistoryError('서버 응답에 success 속성이 없습니다.<br>응답: ' + JSON.stringify(result));
+                        return;
+                    }
+                    
+                    if (result.success) {
+                        console.log('✅ 기록 조회 성공');
+                        console.log('기록 수:', result.records ? result.records.length : 'records 속성 없음');
+                        
+                        if (!result.records) {
+                            console.warn('⚠️ records 속성이 없음, 빈 배열로 처리');
+                            result.records = [];
+                        }
+                        
+                        displayHistory(result.records);
+                    } else {
+                        console.error('❌ 기록 조회 실패:', result.message);
+                        showHistoryError('기록 조회 실패: ' + (result.message || '알 수 없는 오류'));
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    clearTimeout(timeout);
+                    console.error('❌ 서버 호출 실패:', error);
+                    console.error('오류 타입:', typeof error);
+                    console.error('오류 메시지:', error.message);
+                    console.error('오류 스택:', error.stack);
+                    
+                    showHistoryError(
+                        '서버 호출 중 오류가 발생했습니다.<br>' +
+                        '<strong>오류:</strong> ' + (error.message || error.toString()) + '<br>' +
+                        '<strong>해결방법:</strong><br>' +
+                        '1. 웹앱을 다시 배포해보세요<br>' +
+                        '2. 권한 설정을 확인해보세요<br>' +
+                        '3. Apps Script 편집기에서 함수를 직접 실행해보세요'
+                    );
+                })
+                .getUserRecords(currentUser.id);
+        }
+
+        // 오류 표시 함수 개선
+        function showHistoryError(message) {
+            document.getElementById('historyContent').innerHTML = 
+                '<div class="card" style="background-color: rgba(255,68,68,0.1); border: 1px solid #ff4444;">' +
+                '<h3 style="color: #ff4444; text-align: center; margin-bottom: 15px;">⚠️ 오류 발생</h3>' +
+                '<div style="color: #ccc; margin: 15px 0; line-height: 1.5;">' + message + '</div>' +
+                '<div style="text-align: center; margin-top: 20px;">' +
+                '<button class="btn" onclick="loadUserHistory()" style="margin-right: 10px;">🔄 다시 시도</button>' +
+                '<button class="btn btn-secondary" onclick="testConnection()">🔧 연결 테스트</button>' +
+                '</div>' +
+                '</div>';
+        }
+
+        // 연결 테스트 함수 추가
+        function testConnection() {
+            console.log('연결 테스트 시작...');
+            
+            if (typeof google === 'undefined' || !google.script || !google.script.run) {
+                alert('❌ Google Apps Script 연결 실패\n웹앱이 올바르게 배포되지 않았습니다.');
+                return;
+            }
+            
+            // 간단한 테스트 함수 호출
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    console.log('테스트 응답:', result);
+                    alert('✅ 연결 테스트 성공!\n응답: ' + JSON.stringify(result));
+                })
+                .withFailureHandler(function(error) {
+                    console.error('테스트 실패:', error);
+                    alert('❌ 연결 테스트 실패\n오류: ' + (error.message || error));
+                })
+                .testWebAppResponse(); // 위에서 만든 테스트 함수 호출
+        }
+
+        function displayHistory(records) {
+            if (!records || records.length === 0) {
+                document.getElementById('historyContent').innerHTML = 
+                    '<div class="text-center" style="padding: 40px 0;">' +
+                    '<div style="font-size: 3rem; margin-bottom: 20px;">📝</div>' +
+                    '<h3 style="color: #00ff88;">아직 기록이 없습니다</h3>' +
+                    '<p style="color: #ccc; margin: 15px 0;">첫 번째 기록을 등록해보세요!</p>' +
+                    '<button class="btn" onclick="goToRecordType()" style="margin-top: 20px; width: auto; padding: 12px 25px;">새 기록 등록하기</button>' +
+                    '</div>';
+                return;
+            }
+
+            var historyHTML = '';
+            var maxTotal = Math.max.apply(Math, records.map(function(r) { return r.total || 0; }));
+            
+            for (var i = 0; i < records.length; i++) {
+                var record = records[i];
+                var date = new Date(record.timestamp);
+                var dateStr = date.getFullYear() + '년 ' + 
+                             (date.getMonth() + 1) + '월 ' + 
+                             date.getDate() + '일 ' +
+                             date.getHours().toString().padStart(2, '0') + ':' +
+                             date.getMinutes().toString().padStart(2, '0');
+                
+                var isPersonalBest = record.total === maxTotal && record.total > 0;
+                
+                historyHTML += 
+                    '<div class="card" style="' + (isPersonalBest ? 'border: 2px solid #00ff88; background-color: rgba(0,255,136,0.05);' : '') + '">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">' +
+                    '<div>' +
+                    '<div style="display: flex; align-items: center; gap: 8px;">' +
+                    '<span style="color: #00ff88; font-weight: bold; font-size: 0.9rem;">' + record.recordType + '</span>' +
+                    (isPersonalBest ? '<span style="background-color: #00ff88; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">개인 최고</span>' : '') +
+                    '</div>' +
+                    '<div style="color: #ccc; font-size: 0.8rem; margin-top: 3px;">' + dateStr + '</div>' +
+                    '</div>' +
+                    '<div style="text-align: right;">' +
+                    '<div style="font-size: 1.4rem; font-weight: bold; color: ' + (isPersonalBest ? '#00ff88' : '#ff4444') + ';">' + record.total + 'kg</div>' +
+                    '<div style="font-size: 0.8rem; color: #ccc;">' + record.rank + '위</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">' +
+                    '<div style="text-align: center; padding: 12px 8px; background-color: rgba(0,0,0,0.4); border-radius: 6px;">' +
+                    '<div style="color: #ccc; font-size: 0.7rem; margin-bottom: 4px;">🦵 스쿼트</div>' +
+                    '<div style="font-weight: bold; font-size: 0.9rem; color: ' + (record.squatSuccess === '성공' ? '#00ff88' : '#ff4444') + ';">' +
+                    (record.squatSuccess === '성공' ? record.squatWeight + 'kg' : '실패') +
+                    '</div>' +
+                    '</div>' +
+                    '<div style="text-align: center; padding: 12px 8px; background-color: rgba(0,0,0,0.4); border-radius: 6px;">' +
+                    '<div style="color: #ccc; font-size: 0.7rem; margin-bottom: 4px;">💪 벤치</div>' +
+                    '<div style="font-weight: bold; font-size: 0.9rem; color: ' + (record.benchSuccess === '성공' ? '#00ff88' : '#ff4444') + ';">' +
+                    (record.benchSuccess === '성공' ? record.benchWeight + 'kg' : '실패') +
+                    '</div>' +
+                    '</div>' +
+                    '<div style="text-align: center; padding: 12px 8px; background-color: rgba(0,0,0,0.4); border-radius: 6px;">' +
+                    '<div style="color: #ccc; font-size: 0.7rem; margin-bottom: 4px;">🔥 데드</div>' +
+                    '<div style="font-weight: bold; font-size: 0.9rem; color: ' + (record.deadSuccess === '성공' ? '#00ff88' : '#ff4444') + ';">' +
+                    (record.deadSuccess === '성공' ? record.deadWeight + 'kg' : '실패') +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+            }
+
+            var totalRecords = records.length;
+            var avgTotal = Math.round(records.reduce(function(sum, r) { return sum + (r.total || 0); }, 0) / totalRecords);
+            
+            var summaryHTML = 
+                '<div class="card" style="background-color: rgba(0,255,136,0.1); border: 1px solid #00ff88; margin-bottom: 20px;">' +
+                '<h3 style="color: #00ff88; text-align: center; margin-bottom: 15px;">📊 나의 운동 기록 요약</h3>' +
+                '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; text-align: center;">' +
+                '<div>' +
+                '<div style="color: #ccc; font-size: 0.8rem;">총 운동 횟수</div>' +
+                '<div style="font-size: 1.5rem; font-weight: bold; color: #00ff88;">' + totalRecords + '</div>' +
+                '<div style="color: #ccc; font-size: 0.7rem;">회</div>' +
+                '</div>' +
+                '<div>' +
+                '<div style="color: #ccc; font-size: 0.8rem;">개인 최고</div>' +
+                '<div style="font-size: 1.5rem; font-weight: bold; color: #ff4444;">' + maxTotal + '</div>' +
+                '<div style="color: #ccc; font-size: 0.7rem;">kg</div>' +
+                '</div>' +
+                '<div>' +
+                '<div style="color: #ccc; font-size: 0.8rem;">평균 기록</div>' +
+                '<div style="font-size: 1.5rem; font-weight: bold; color: #ff8800;">' + avgTotal + '</div>' +
+                '<div style="color: #ccc; font-size: 0.7rem;">kg</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+
+            document.getElementById('historyContent').innerHTML = summaryHTML + historyHTML;
+        }
+
+        // 순위 화면으로 이동
+        function goToRankings() {
+            showScreen('rankingsScreen');
+            loadRankings();
+        }
+
+        // 순위 데이터 로드 (개선된 디버깅 버전)
+        function loadRankings() {
+            console.log('=== 클라이언트: 순위 로딩 시작 ===');
+            console.log('현재 시간:', new Date().toISOString());
+            console.log('현재 사용자:', currentUser);
+            
+            // 로딩 화면 표시
+            document.getElementById('rankingsContent').innerHTML = 
+                '<div class="text-center" style="padding: 40px 0;">' +
+                '<div class="loading"></div>' +
+                '<div style="margin-top: 15px; color: #ccc;">순위를 불러오는 중...</div>' +
+                '<div style="margin-top: 10px; font-size: 0.8rem; color: #666;">디버깅 모드 활성화</div>' +
+                '</div>';
+
+            // Google Apps Script 연결 확인
+            console.log('Google Apps Script 확인...');
+            console.log('typeof google:', typeof google);
+            console.log('google.script:', google ? google.script : 'google is undefined');
+            console.log('google.script.run:', google && google.script ? google.script.run : 'google.script is undefined');
+
+            if (typeof google === 'undefined' || !google.script || !google.script.run) {
+                console.error('❌ Google Apps Script 연결 실패');
+                showRankingsError('Google Apps Script 연결에 실패했습니다.');
+                return;
+            }
+
+            console.log('✅ Google Apps Script 연결 확인됨');
+            
+            // 타임아웃 설정
+            const timeout = setTimeout(function() {
+                console.error('⏰ 순위 조회 타임아웃 (20초 초과)');
+                showRankingsError('서버 응답이 너무 오래 걸립니다.<br>잠시 후 다시 시도해주세요.');
+            }, 20000);
+
+            // 서버 호출
+            console.log('getAllRankings 호출 시작...');
+            
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    clearTimeout(timeout);
+                    console.log('✅ 서버 응답 받음');
+                    console.log('응답 타입:', typeof result);
+                    console.log('응답 내용:', result);
+                    
+                    // null/undefined 체크
+                    if (result === null || result === undefined) {
+                        console.error('❌ null/undefined 응답');
+                        showRankingsError('서버에서 올바른 응답을 받지 못했습니다.');
+                        return;
+                    }
+                    
+                    // success 체크
+                    if (!result.hasOwnProperty('success')) {
+                        console.error('❌ success 속성 없음');
+                        showRankingsError('서버 응답 형식이 올바르지 않습니다.');
+                        return;
+                    }
+                    
+                    if (result.success) {
+                        console.log('✅ 순위 조회 성공');
+                        console.log('순위 데이터 수:', result.rankings ? result.rankings.length : 0);
+                        
+                        // 전역 변수에 저장
+                        allRankings = result.rankings || [];
+                        console.log('전역 변수 allRankings:', allRankings);
+                        
+                        // 화면에 표시
+                        displayRankings();
+                        updateMyRank();
+                        updateStats();
+                    } else {
+                        console.error('❌ 순위 조회 실패:', result.message);
+                        showRankingsError('순위 데이터를 불러오지 못했습니다: ' + (result.message || ''));
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    clearTimeout(timeout);
+                    console.error('❌ 서버 호출 실패');
+                    console.error('오류 타입:', typeof error);
+                    console.error('오류 내용:', error);
+                    console.error('오류 메시지:', error.message);
+                    console.error('오류 스택:', error.stack);
+                    
+                    showRankingsError('순위 조회 중 오류가 발생했습니다: ' + (error.message || error.toString()));
+                })
+                .getAllRankings();
+            
+            console.log('getAllRankings 호출 완료 (응답 대기중)');
+        }
+
+        // 순위 표시 (디버깅 추가)
+        function displayRankings() {
+            console.log('=== displayRankings 시작 ===');
+            console.log('allRankings:', allRankings);
+            console.log('currentFilter:', currentFilter);
+            
+            applyFilter();
+            
+            console.log('filteredRankings:', filteredRankings);
+            console.log('filteredRankings 길이:', filteredRankings.length);
+            
+            if (filteredRankings.length === 0) {
+                console.log('⚠️ 표시할 순위 데이터가 없습니다');
+                document.getElementById('rankingsContent').innerHTML = 
+                    '<div class="text-center" style="padding: 40px 0;">' +
+                    '<div style="font-size: 3rem; margin-bottom: 20px;">🏆</div>' +
+                    '<h3 style="color: #ccc;">순위 데이터가 없습니다</h3>' +
+                    '<p style="color: #666;">필터: ' + currentFilter + '</p>' +
+                    '<p style="color: #666;">전체 데이터 수: ' + (allRankings ? allRankings.length : 0) + '</p>' +
+                    '</div>';
+                return;
+            }
+
+            console.log('순위 HTML 생성 중...');
+            var html = '';
+            for (var i = 0; i < filteredRankings.length; i++) {
+                var ranking = filteredRankings[i];
+                console.log(`순위 ${i + 1}:`, ranking);
+                
+                var rankClass = getRankClass(ranking.rank);
+                var isCurrentUser = currentUser && ranking.userId === currentUser.id;
+                
+                html += 
+                    '<div class="rank-item" style="' + (isCurrentUser ? 'border: 2px solid #00ff88; background-color: rgba(0,255,136,0.1);' : '') + '">' +
+                    '<div class="rank-number ' + rankClass + '">' + getRankDisplay(ranking.rank) + '</div>' +
+                    '<div class="user-info">' +
+                    '<div class="user-name" style="' + (isCurrentUser ? 'color: #00ff88;' : '') + '">' +
+                    ranking.name + (isCurrentUser ? ' (나)' : '') +
+                    '</div>' +
+                    '<div class="user-details">' +
+                    ranking.gender + ' | ' + ranking.trainer + ' 트레이너' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="user-total">' + ranking.total + 'kg</div>' +
+                    '</div>';
+            }
+            
+            console.log('순위 HTML 생성 완료, 길이:', html.length);
+            document.getElementById('rankingsContent').innerHTML = html;
+            console.log('✅ 순위 표시 완료');
+        }
+
+        // 순위별 클래스 반환
+        function getRankClass(rank) {
+            if (rank === 1) return 'rank-gold';
+            if (rank === 2) return 'rank-silver';
+            if (rank === 3) return 'rank-bronze';
+            return 'rank-normal';
+        }
+
+        // 순위 표시 형식
+        function getRankDisplay(rank) {
+            if (rank === 1) return '🥇';
+            if (rank === 2) return '🥈';
+            if (rank === 3) return '🥉';
+            return rank;
+        }
+
+        // 필터 적용
+        function filterRankings(filter) {
+          currentFilter = filter;
+          // 탭 활성화
+          var tabs = document.querySelectorAll('.filter-tab');
+          for (var i = 0; i < tabs.length; i++) {
+            tabs[i].classList.remove('active');
+        
+           // 현재 필터와 일치하는 탭 활성화
+            if ((filter === 'all' && tabs[i].textContent.includes('전체')) ||
+              (filter === 'male' && tabs[i].textContent.includes('남성')) ||
+              (filter === 'female' && tabs[i].textContent.includes('여성'))) {
+            tabs[i].classList.add('active');
+        }
+    }
+    
+    displayRankings();
+}
+
+
+        // 필터 로직
+        function applyFilter() {
+            if (currentFilter === 'all') {
+                filteredRankings = allRankings.slice();
+            } else if (currentFilter === 'male') {
+                filteredRankings = allRankings.filter(function(r) { return r.gender === '남'; });
+            } else if (currentFilter === 'female') {
+                filteredRankings = allRankings.filter(function(r) { return r.gender === '여'; });
+            }
+            
+            // 검색어 적용
+            var searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm) {
+                filteredRankings = filteredRankings.filter(function(r) {
+                    return r.name.toLowerCase().includes(searchTerm);
+                });
+            }
+        }
+
+        // 검색
+        function searchRankings() {
+            displayRankings();
+        }
+
+        // 내 순위 업데이트
+        function updateMyRank() {
+            if (!currentUser) return;
+            
+            var myRank = allRankings.find(function(r) { return r.userId === currentUser.id; });
+            
+            if (myRank) {
+                document.getElementById('myCurrentRank').textContent = myRank.rank + '위';
+                document.getElementById('myBestTotal').textContent = myRank.total + 'kg';
+                document.getElementById('myRankCard').style.display = 'block';
+            } else {
+                document.getElementById('myRankCard').style.display = 'none';
+            }
+        }
+
+        // 통계 업데이트
+        function updateStats() {
+            var totalUsers = allRankings.length;
+            var avgTotal = totalUsers > 0 ? 
+                Math.round(allRankings.reduce(function(sum, r) { return sum + r.total; }, 0) / totalUsers) : 0;
+            
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('avgTotal').textContent = avgTotal + 'kg';
+        }
+
+        // 오류 표시
+        function showRankingsError(message) {
+            document.getElementById('rankingsContent').innerHTML = 
+                '<div class="text-center" style="padding: 40px 0; color: #ff4444;">' +
+                '<div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>' +
+                '<h3>오류 발생</h3>' +
+                '<p style="color: #ccc; margin: 15px 0;">' + message + '</p>' +
+                '<button class="btn" onclick="loadRankings()" style="width: auto; padding: 12px 25px;">다시 시도</button>' +
+                '</div>';
+        }
+
+        // ===== 디버깅 헬퍼 함수들 =====
+        window.debugRankings = function() {
+            console.log('=== 디버깅 정보 ===');
+            console.log('allRankings:', allRankings);
+            console.log('filteredRankings:', filteredRankings);
+            console.log('currentFilter:', currentFilter);
+            console.log('currentUser:', currentUser);
+            console.log('rankingsContent HTML:', document.getElementById('rankingsContent').innerHTML);
+        };
+
+        // 테스트용 함수
+        window.setTestRankings = function() {
+            console.log('테스트 순위 데이터 설정...');
+            allRankings = [
+                { userId: 'TEST_001', name: '테스트1', gender: '남', trainer: '김코치', total: 500, rank: 1 },
+                { userId: 'TEST_002', name: '테스트2', gender: '여', trainer: '이코치', total: 450, rank: 2 },
+                { userId: 'TEST_003', name: '테스트3', gender: '남', trainer: '박코치', total: 400, rank: 3 }
+            ];
+            displayRankings();
+            updateStats();
+            console.log('테스트 데이터 설정 완료');
+        };
+
+        // 전체 순위 테스트 함수
+        window.testRankingsFlow = function() {
+            console.log('=== 전체 순위 테스트 시작 ===');
+            
+            // 1. 전역 변수 확인
+            console.log('1. 전역 변수 확인');
+            console.log('  - allRankings:', allRankings);
+            console.log('  - filteredRankings:', filteredRankings);
+            console.log('  - currentFilter:', currentFilter);
+            console.log('  - currentUser:', currentUser);
+            
+            // 2. DOM 요소 확인
+            console.log('2. DOM 요소 확인');
+            console.log('  - rankingsContent:', document.getElementById('rankingsContent'));
+            console.log('  - myRankCard:', document.getElementById('myRankCard'));
+            console.log('  - totalUsers:', document.getElementById('totalUsers'));
+            console.log('  - avgTotal:', document.getElementById('avgTotal'));
+            
+            // 3. 필터 탭 확인
+            console.log('3. 필터 탭 확인');
+            const filterTabs = document.querySelectorAll('.filter-tab');
+            console.log('  - 필터 탭 수:', filterTabs.length);
+            filterTabs.forEach((tab, index) => {
+                console.log(`  - 탭 ${index}:`, tab.textContent, tab.className);
+            });
+            
+            // 4. 검색 입력 확인
+            console.log('4. 검색 입력 확인');
+            const searchInput = document.getElementById('searchInput');
+            console.log('  - searchInput:', searchInput);
+            console.log('  - searchInput value:', searchInput ? searchInput.value : 'null');
+        };
+    </script>
+</body>
+</html>
